@@ -19,14 +19,8 @@ def knn(dtrain, dtest, k):
 
 # majority voting
 def result(distances):
-    n_negative = 0
-    n_positive = 0
-    for distance in distances:
-        if distance[0][-1] == 0:
-            n_negative += 1
-        else:
-            n_positive += 1
-    return 1 if n_positive >= n_negative else 0
+    n_positive = sum([1 for x in distances if x[0][-1] == 1 ])
+    return 1 if n_positive >= len(distances)/2 else 0
 
 def cross_validation(dtrain, k):
     positive_samples = array([x for x in scaled_dataset if x[-1] == 1])
