@@ -38,8 +38,6 @@ def cross_validation(dtrain, k):
             negative_tests = negative_samples[current_fold*negative_fold_size:]
             positive_train[current_fold*positive_fold_size:] = []
             negative_train[current_fold*negative_fold_size:] = []
-            positive_train = array(positive_train)
-            negative_train = array(negative_train)
         else:
             #slice test data
             positive_tests = positive_samples[current_fold*positive_fold_size : ( current_fold + 1 ) * positive_fold_size]
@@ -47,9 +45,9 @@ def cross_validation(dtrain, k):
             #get remaining data for training
             positive_train[current_fold*positive_fold_size : ( current_fold + 1 ) * positive_fold_size] = []
             negative_train[current_fold*negative_fold_size : ( current_fold + 1 ) * negative_fold_size] = []
-            positive_train = array(positive_train)
-            negative_train = array(negative_train)
 
+        positive_train = array(positive_train)
+        negative_train = array(negative_train)
         tests = concatenate(( positive_tests, negative_tests ))
         train_data = concatenate(( positive_train, negative_train ))
         correct = 0
