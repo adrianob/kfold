@@ -29,8 +29,6 @@ def result(distances):
     return 1 if n_positive >= n_negative else 0
 
 def cross_validation(dtrain, k):
-    X = array(dtrain[:,0:8])
-    Y = array(dtrain[:,8])
     positive_samples = array([x for x in scaled_dataset if x[-1] == 1])
     negative_samples = array([x for x in scaled_dataset if x[-1] == 0])
     positive_fold_size = int(positive_samples.shape[0]/k)
