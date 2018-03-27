@@ -50,12 +50,8 @@ def cross_validation(dtrain, k):
         negative_train = array(negative_train)
         tests = concatenate(( positive_tests, negative_tests ))
         train_data = concatenate(( positive_train, negative_train ))
-        correct = 0
-        for instance in tests:
-            distances = knn(train_data, instance, 5)
-            result_class = result(distances)
-            if result_class == instance[-1]:
-                correct += 1
+        correct = sum([1 for instance in tests
+                       if result(knn(train_data, instance, 5)) == instance[-1] ])
         accuracy = correct / len(tests)
         accuracies.append(accuracy)
         print(current_fold)
