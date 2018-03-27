@@ -25,26 +25,20 @@ def result(distances):
 def cross_validation(dtrain, k):
     positive_samples = array([x for x in scaled_dataset if x[-1] == 1])
     negative_samples = array([x for x in scaled_dataset if x[-1] == 0])
-    positive_fold_size = int(positive_samples.shape[0]/k)
-    negative_fold_size = int(negative_samples.shape[0]/k)
+    positive_fold_size = int(ceil(positive_samples.shape[0]/k))
+    negative_fold_size = int(ceil(negative_samples.shape[0]/k))
 
     accuracies = []
     for current_fold in range(k):
         #copy list
         positive_train = list(positive_samples)
         negative_train = list(negative_samples)
-        if current_fold == k - 1:
-            positive_tests = positive_samples[current_fold*positive_fold_size:]
-            negative_tests = negative_samples[current_fold*negative_fold_size:]
-            positive_train[current_fold*positive_fold_size:] = []
-            negative_train[current_fold*negative_fold_size:] = []
-        else:
-            #slice test data
-            positive_tests = positive_samples[current_fold*positive_fold_size : ( current_fold + 1 ) * positive_fold_size]
-            negative_tests = negative_samples[current_fold*negative_fold_size : ( current_fold + 1 ) * negative_fold_size]
-            #get remaining data for training
-            positive_train[current_fold*positive_fold_size : ( current_fold + 1 ) * positive_fold_size] = []
-            negative_train[current_fold*negative_fold_size : ( current_fold + 1 ) * negative_fold_size] = []
+        #slice test data
+        positive_tests = positive_samples[current_fold*positive_fold_size : ( current_fold + 1 ) * positive_fold_size]
+        negative_tests = negative_samples[current_fold*negative_fold_size : ( current_fold + 1 ) * negative_fold_size]
+        #get remaining data for training
+        positive_train[current_fold*positive_fold_size : ( current_fold + 1 ) * positive_fold_size] = []
+        negative_train[current_fold*negative_fold_size : ( current_fold + 1 ) * negative_fold_size] = []
 
         positive_train = array(positive_train)
         negative_train = array(negative_train)
