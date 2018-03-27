@@ -34,6 +34,7 @@ def cross_validation(dtrain, k):
     positive_fold_size = int(positive_samples.shape[0]/k)
     negative_fold_size = int(negative_samples.shape[0]/k)
 
+    accuracies = []
     for current_fold in range(k):
         #copy list
         positive_train = list(positive_samples)
@@ -58,7 +59,6 @@ def cross_validation(dtrain, k):
         tests = concatenate(( positive_tests, negative_tests ))
         train_data = concatenate(( positive_train, negative_train ))
         correct = 0
-        accuracies = []
         for instance in tests:
             distances = knn(train_data, instance, 5)
             result_class = result(distances)
