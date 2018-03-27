@@ -33,33 +33,59 @@ def result(distances):
             n_positive += 1
     return 1 if n_positive >= n_negative else 0
 
+def cross_validation(dtrain, k):
+    X = array(dtrain[:,0:8])
+    Y = array(dtrain[:,8])
+    positive_samples = array([x for x in scaled_dataset if x[-1] == 1])
+    negative_samples = array([x for x in scaled_dataset if x[-1] == 0])
+    positive_fold_size = int(positive_samples.shape[0]/k)
+    negative_fold_size = int(negative_samples.shape[0]/k)
+
+    for current_fold in range(k):
+        #copy list
+        positive_train = list(positive_samples)
+        negative_train = list(negative_samples)
+        if current_fold == k - 1:
+            positive_tests = positive_samples[current_fold*positive_fold_size:]
+            negative_tests = negative_samples[current_fold*negative_fold_size:]
+            positive_train[current_fold*positive_fold_size:] = []
+            negative_train[current_fold*negative_fold_size:] = []
+            positive_train = array(positive_train)
+            negative_train = array(negative_train)
+        else:
+            #slice test data
+            positive_tests = positive_samples[current_fold*positive_fold_size : ( current_fold + 1 ) * positive_fold_size]
+            negative_tests = negative_samples[current_fold*negative_fold_size : ( current_fold + 1 ) * negative_fold_size]
+            #get remaining data for training
+            positive_train[current_fold*positive_fold_size : ( current_fold + 1 ) * positive_fold_size] = []
+            negative_train[current_fold*negative_fold_size : ( current_fold + 1 ) * negative_fold_size] = []
+            positive_train = array(positive_train)
+            negative_train = array(negative_train)
+
+        tests = concatenate(( positive_tests, negative_tests ))
+        train_data = concatenate(( positive_train, negative_train ))
+        correct = 0
+        accuracies = []
+        for instance in tests:
+            distances = knn(train_data, instance, 5)
+            result_class = result(distances)
+            if result_class == instance[-1]:
+                correct += 1
+        accuracy = correct / len(tests)
+        accuracies.append(accuracy)
+        print(current_fold)
+        print(accuracy)
+        print()
+
+    print("Accuracy: %.2f%% (%.2f%%)" % (mean(accuracies)*100, std(accuracies)*100))
+
 # load data
 dataset = loadtxt('diabetes.csv', delimiter=",", skiprows=1)
 # split data into X and y
 X = array(dataset[:,0:8])
 Y = array(dataset[:,8])
-
-# scaling
-# for x in range(X.shape[1]):
-#     feature = X[:, x]
-#     for index, data in enumerate(feature):
-#         X[index][x] = ( data - mean(feature) ) / float(std(feature))
-
 X = scale(X)
+
 scaled_dataset = concatenate(( X,   Y[:, None] ), axis = 1)
-X = array(scaled_dataset[:,0:8])
-Y = array(scaled_dataset[:,8])
-positive_samples = array([x for x in scaled_dataset if x[-1] == 1])
-negative_samples = array([x for x in scaled_dataset if x[-1] == 0])
-
-distances = knn(scaled_dataset, scaled_dataset[-1], 5)
-result_class = result(distances)
-print(result_class)
-
 k = 10 #number of folds
-
-# CV model
-# model = xgboost.XGBClassifier()
-# kfold = StratifiedKFold(n_splits=10, random_state=7)
-# results = cross_val_score(model, X, Y, cv=kfold)
-# print("Accuracy: %.2f%% (%.2f%%)" % (results.mean()*100, results.std()*100))
+cross_validation(scaled_dataset, k)
