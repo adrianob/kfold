@@ -1,11 +1,6 @@
-# stratified k-fold cross validation evaluation of xgboost model
 from numpy import *
-import xgboost
 import operator
-from sklearn.model_selection import StratifiedKFold
-from sklearn.model_selection import cross_val_score
 from sklearn.preprocessing import scale
-# set_printoptions(threshold=nan)
 import math
 def euclideanDistance(instance1, instance2):
 	distance = 0
