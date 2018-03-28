@@ -46,7 +46,7 @@ def cross_validation(dtrain, k):
         train_data = concatenate(( positive_train, negative_train ))
         correct = sum([1 for instance in tests
                        if result(knn(train_data, instance, 5)) == instance[-1] ])
-        accuracy = correct / len(tests)
+        accuracy = correct / float(len(tests))
         accuracies.append(accuracy)
         print(current_fold)
         print(accuracy)
