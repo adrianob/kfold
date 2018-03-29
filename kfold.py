@@ -29,6 +29,7 @@ def cross_validation(dtrain, k):
     negative_fold_size = int(ceil(negative_samples.shape[0]/k))
 
     accuracies = []
+    f1_scores = []
     for current_fold in range(k):
         #copy list
         positive_train = list(positive_samples)
@@ -44,15 +45,25 @@ def cross_validation(dtrain, k):
         negative_train = array(negative_train)
         tests = concatenate(( positive_tests, negative_tests ))
         train_data = concatenate(( positive_train, negative_train ))
-        correct = sum([1 for instance in tests
-                       if result(knn(train_data, instance, 5)) == instance[-1] ])
-        accuracy = correct / float(len(tests))
+        true_positives = sum([1 for instance in positive_tests
+                            if result(knn(train_data, instance, 5)) == instance[-1] ])
+        true_negatives = sum([1 for instance in negative_tests
+                            if result(knn(train_data, instance, 5)) == instance[-1] ])
+        false_positives = len(positive_tests) - true_positives
+        false_negatives = len(negative_tests) - true_negatives
+        precision = true_positives/float(len(positive_tests))
+        recall = true_positives/float(true_positives+false_negatives)
+        f1_score = 2*precision*recall/float(precision+recall)
+        f1_scores.append(f1_score)
+        accuracy = (true_positives+true_negatives)/float(len(tests))
         accuracies.append(accuracy)
-        print(current_fold)
-        print(accuracy)
-        print()
+        print('Current_fold = ' +  str(current_fold))
+        print('Accuracy = ' + str(accuracy))
+        print('F1_score = ' + str(f1_score))
+        print('------')
 
     print("Accuracy: %.2f%% (%.2f%%)" % (mean(accuracies)*100, std(accuracies)*100))
+    print("F1 score: %.2f%% (%.2f%%)" % (mean(f1_scores)*100, std(f1_scores)*100))
 
 # load data
 dataset = loadtxt('diabetes.csv', delimiter=",", skiprows=1)
